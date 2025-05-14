@@ -1,252 +1,370 @@
-# quill-react-commercial
+# quill-react-pro
 
-[中文](/readme_CN.md)
+**A Professional-Grade Quill Rich Text Editor for React**
 
-As an outstanding and popular open-source rich text editor, [Quill](https://github.com/quilljs/quill) has a good data structure, API, and plugin system. However, due to years of difficult updates and outdated plugins, there is an urgent need for a Quill rich text editor that can be used for production, meet the experience and extension, can be customized, and can be oriented towards commercialization.
+This project is a fork and enhancement of the original `quill-react-commercial` library by ludejun, aiming to provide a robust, customizable, and production-ready Quill rich text editor component for React applications. It leverages the power of [Quill](https://github.com/quilljs/quill) with a focus on improved user experience, modern development practices, and extended features.
 
-![quill-react-commercial](https://cdn.jsdelivr.net/gh/ludejun/quill-react-commercial/example/images/quill-react-commercial.jpg)
+![quill-react-pro](https://cdn.jsdelivr.net/gh/ludejun/quill-react-commercial/example/images/quill-react-commercial.jpg)
+_(Note: Image from original repository. Links will be updated as the project evolves.)_
 
 ## Features
 
-- Use the latest quill@2.0.2. Implement using React Hooks, TS support, and Rollup packaging.
-- Images support local upload and image Url insertion, and can limit the format and size before.
-- All images support Base64 display, and can be uploaded remotely in the background. If fail, can click to upload again. Images support copying and dragging to insertion.
-- Image support for resizing, aligning, adding notes, deleting, scrolling to remove overlayer.
-- Refactoring Link Tooltip to add more actions.
-- Support for inputing markdown directly.
-- Code blocks support language selection, copying, and code line labeling.
-- Table supports toolbar selection of size, right-click for more options and new icons.
-- Support for multilingual Tooltip prompts when Icon hover.
-- Internationalization: Supports Chinese, English, and Spanish languages, including Chinese font compatibility.
-- When using IME and other input methods (such as Pinyin), placeholders can disappear in a timely manner
-- Automatically recognize input or copy URLs as LinkBlot.
-- Other bugfix: Unable to input list in table, upload images in table, recognize ordered list, cannot delete blocks such as code and table, unable to save image location, etc.
+- **Latest Quill Version:** Built upon quill@2.0.2 (or the latest stable version at the time of updates).
+- **React Hooks & TypeScript:** Modern implementation using React Hooks, with TypeScript support for better development experience and type safety.
+- **Efficient Bundling:** Packaged with Rollup for optimized builds.
+- **Enhanced Image Handling:**
+  - Supports local image uploads and insertion via URL.
+  - Pre-upload checks for image format and size.
+  - All images can be displayed as Base64 and uploaded remotely in the background.
+  - Retry failed uploads with a click.
+  - Supports copying and dragging images for insertion.
+  - Image resizing, alignment, captioning/notes, and deletion.
+  - Overlays on images are removed when scrolling.
+- **Improved Link Tooltip:** Refactored link tooltip with more actions.
+- **Markdown Support:** Directly input Markdown and have it converted to rich text.
+- **Advanced Code Blocks:**
+  - Language selection for syntax highlighting.
+  - Copy-to-clipboard functionality.
+  - Code line numbering.
+- **Enhanced Tables:**
+  - Toolbar for easy selection of table size.
+  - Right-click context menu for more table operations.
+  - New, intuitive icons.
+- **Multilingual Tooltips:** Informative tooltips on icon hover, primarily in English.
+- **Internationalization (i18n):** Core support for multiple languages, with English as the default. The original library supported Chinese and Spanish; contributions for maintaining and expanding translations are welcome.
+- **Improved IME Handling:** Placeholders disappear correctly when using Input Method Editors (e.g., Pinyin).
+- **Auto-linking:** Automatically recognizes typed or pasted URLs and converts them to active links (LinkBlot).
+- **Bug Fixes:** Addresses various issues from the original or base Quill, such as:
+  - Inputting lists within tables.
+  - Uploading images within tables.
+  - Recognition of ordered lists.
+  - Deletion of block elements like code blocks and tables.
+  - Preserving image locations.
 
-## Install
+## Installation
 
 ```shell
-npm install quill-react-commercial --save
+npm install quill-react-pro --save
 # or
-yarn add quill-react-commercial
+yarn add quill-react-pro
 ```
 
 ## Quick Start
 
 ```javascript
-import RichTextEditor from 'quill-react-commercial';
-import 'quill-react-commercial/lib/index.css';
+import React from "react";
+import RichTextEditor from "quill-react-pro";
+import "quill-react-pro/lib/index.css"; // Ensure you have the CSS
 
-<RichTextEditor modules={{ table: {}, codeHighlight: true }} />;
+function MyEditor() {
+  // Example modules configuration
+  const modules = {
+    table: {}, // Enable table module with default options
+    codeHighlight: true, // Enable code highlighting
+    // Add other modules as needed
+  };
+
+  return (
+    <RichTextEditor modules={modules} placeholder="Start typing here..." />
+  );
+}
+
+export default MyEditor;
 ```
 
-- UMD / CDN: window.quillReactCommercial will get this Component. Demo in `example folder`
+**UMD / CDN Usage:**
+The component will be available under `window.QuillReactPro` (or a similar name, check the UMD build output).
+Refer to the `example` folder in the repository for a demonstration.
 
 ```html
-<script src="../dist/quill-react-commercial.min.js"></script>
+<script src="path/to/your/quill-react-pro.min.js"></script>
+<link rel="stylesheet" href="path/to/your/quill-react-pro.css" />
 ```
 
 ## Usage
 
-### Properties（Refer to TS definition）
+### Properties (Refer to TypeScript definitions for full details)
 
-##### 1. modules：Required，Object；Each key can be false when not needed
+##### 1\. `modules`: `object` (Required)
 
-```js
-{
-  codeHighlight?: true,
-  table?: {
-    operationMenu?: {
-      insertColumnRight?: {
-    		text: 'Insert Column Right',
-  		}
-    }, // Generally not required
-    backgroundColors?: {
-      colors?: ['#4a90e2', '#999'], // backgroundcolor of table cell, default: ['#dbc8ff', '#6918b4', '#4a90e2', '#999', '#fff']
-      text?: 'Background Colors', // default: 'Background Colors'
+Object to configure Quill modules. Each key can be set to `false` if not needed.
+
+```javascript
+const modules = {
+  codeHighlight: true, // Enables syntax highlighting for code blocks
+  table: {
+    // Enables table functionality
+    operationMenu: {
+      // Customize context menu items (optional)
+      insertColumnRight: { text: "Insert Column Right" },
+      // ... other operations (see default values below)
     },
-    toolBarOptions?: {
-      dialogRows?: 3, // default: 9
-      dialogColumns?: 4, // default: 9
-      i18?: 'en',
-    }, // when click table in toorbar, the configs of the dialog
-  }, // default: false
-  imageResize?: true, // default: true
-  imageDrop?: true, // default: true
-  magicUrl?: true, // Automatically recognize URLs, emails, etc., and add LinkBlot; default: true
-  markdown?: true, // Automatically support markdown and convert to rich text; default: true
-  link?: true, // default: true
+    backgroundColors: {
+      // Customize table cell background colors
+      colors: ["#4a90e2", "#999", "#ffffff", "#000000"], // Default: ['#dbc8ff', '#6918b4', '#4a90e2', '#999', '#fff']
+      text: "Background Colors", // Default: 'Background Colors'
+    },
+    toolBarOptions: {
+      // Configuration for the table creation dialog
+      dialogRows: 3, // Default: 9
+      dialogColumns: 4, // Default: 9
+      i18n: "en", // Language for the dialog, 'en', 'es', 'zh'
+    },
+  },
+  imageResize: true, // Default: true
+  imageDrop: true, // Default: true (allows dropping images)
+  magicUrl: true, // Default: true (auto-detects and links URLs/emails)
+  markdown: true, // Default: true (converts Markdown to rich text)
+  link: true, // Default: true (basic link functionality)
   imageHandler: {
-    imgUploadApi?: (formData: FormData) => Promise<string>; // Image upload API, it should return a Promise with a URL when resolve
-    uploadSuccCB?: (data: unknown) => void; // callback when success
-    uploadFailCB?: (error: unknown) => void; // callback when failure
-    imgRemarkPre?: 'Fig. '; // Leading string for the image remark, and can be deleted
-    maxSize?: 2; // The maximum size for uploading local images, in MB, defaults to 5MB
-    imageAccept?: string; // Acceptable image types for uploading local images, default: 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon, image/webp'
+    imgUploadApi: async (formData) => {
+      /* ... */
+    }, // Function for custom image upload. Must return a Promise<string> (the image URL).
+    uploadSuccCB: (responseData) => {
+      /* ... */
+    }, // Callback on successful upload
+    uploadFailCB: (error) => {
+      /* ... */
+    }, // Callback on failed upload
+    imgRemarkPre: "Fig. ", // Prefix for image remarks/captions (can be deleted by user)
+    maxSize: 2, // Maximum local image upload size in MB (Default: 5MB)
+    imageAccept:
+      "image/png, image/gif, image/jpeg, image/bmp, image/x-icon, image/webp", // Accepted image types
   },
-  toolbarOptions?: [][]; // Customize the required toolbar icons & order
-}
+  toolbarOptions: [
+    /* ... */
+  ], // Customize toolbar icons and their order (see Quill.js documentation)
+};
 ```
 
-Default value of modules.table.operationMenu
+**Default `modules.table.operationMenu`:**
 
-```js
+```javascript
 {
-  insertColumnRight: {
-    text: 'Insert Column Right',
-  },
-  insertColumnLeft: {
-    text: 'Insert Column Left',
-  },
-  insertRowUp: {
-    text: 'Insert Row Above',
-  },
-  insertRowDown: {
-    text: 'Insert Row Below',
-  },
-  mergeCells: {
-    text: 'Merge Selected Cells',
-  },
-  unmergeCells: {
-    text: 'Unmerge Cells',
-  },
-  deleteColumn: {
-    text: 'Delete Columns',
-  },
-  deleteRow: {
-    text: 'Delete Rows',
-  },
-  deleteTable: {
-    text: 'Delete Table',
-  },
+  insertColumnRight: { text: 'Insert Column Right' },
+  insertColumnLeft: { text: 'Insert Column Left' },
+  insertRowUp: { text: 'Insert Row Above' },
+  insertRowDown: { text: 'Insert Row Below' },
+  mergeCells: { text: 'Merge Selected Cells' },
+  unmergeCells: { text: 'Unmerge Cells' },
+  deleteColumn: { text: 'Delete Columns' },
+  deleteRow: { text: 'Delete Rows' },
+  deleteTable: { text: 'Delete Table' },
 }
 ```
 
-![table-en](https://cdn.jsdelivr.net/gh/ludejun/quill-react-commercial/example/images/table-en.jpg)
+_(Note: Image from original repository)_
 
-modules.imageHandler: If not defined, the default inserted image will be converted to base64 and stored in Delta
-![image](https://raw.githubusercontent.com/ludejun/quill-react-commercial/master/example/images/image.gif)
+**`modules.imageHandler`:** If not defined, inserted images are converted to base64 and stored in the Delta.
+_(Note: Image from original repository)_
 
-Demo of modules.toolbarOptionse. Details in https://quilljs.com/docs/modules/toolbar/
+**Example `modules.toolbarOptions`:** (Refer to [Quill Toolbar Module Documentation](https://quilljs.com/docs/modules/toolbar/))
 
 ```javascript
 const toolbarOptions = [
-  ['undo', 'redo', 'clean'],
+  ["undo", "redo", "clean"],
   [
-    { font: ['wsYaHei', 'songTi', 'serif', 'arial'] },
-    { size: ['12px', '14px', '18px', '36px'] },
+    {
+      font: ["Arial", "Times New Roman", "Courier New", "serif", "sans-serif"],
+    }, // Customize fonts
+    { size: ["small", false, "large", "huge"] }, // Use Quill's named sizes or specific px values
   ],
   [{ color: [] }, { background: [] }],
-  ['bold', 'italic', 'underline', 'strike'],
+  ["bold", "italic", "underline", "strike"],
   [
-    { list: 'ordered' },
-    { list: 'bullet' },
-    { list: 'check' },
-    { indent: '-1' },
-    { indent: '+1' },
+    { list: "ordered" },
+    { list: "bullet" },
+    { list: "check" },
+    { indent: "-1" },
+    { indent: "+1" },
     { align: [] },
   ],
   [
-    'blockquote',
-    'code-block',
-    'link',
-    'image',
-    { script: 'sub' },
-    { script: 'super' },
-    'table',
-    'divider',
+    "blockquote",
+    "code-block",
+    "link",
+    "image",
+    { script: "sub" },
+    { script: "super" },
+    "table",
+    "divider", // Custom divider if implemented
   ],
 ];
 ```
 
-Default of modules.codeHighlight, and you can change it. Or welcome your PR.
+**Default `modules.codeHighlight` languages:** (You can customize this)
 
 ```javascript
 [
-  { key: 'plain', label: 'Plain' },
-  { key: 'javascript', label: 'Javascript' },
-  { key: 'java', label: 'Java' },
-  { key: 'python', label: 'Python' },
-  { key: 'cpp', label: 'C++/C' },
-  { key: 'csharp', label: 'C#' },
-  { key: 'php', label: 'PHP' },
-  { key: 'sql', label: 'SQL' },
-  { key: 'json', label: 'JSON' },
-  { key: 'bash', label: 'Bash' },
-  { key: 'go', label: 'Go' },
-  { key: 'objectivec', label: 'Object-C' },
-  { key: 'xml', label: 'Html/xml' },
-  { key: 'css', label: 'CSS' },
-  { key: 'ruby', label: 'Ruby' },
-  { key: 'swift', label: 'Swift' },
-  { key: 'scala', label: 'Scala' },
+  { key: "plain", label: "Plain Text" },
+  { key: "javascript", label: "JavaScript" },
+  { key: "java", label: "Java" },
+  { key: "python", label: "Python" },
+  { key: "cpp", label: "C++/C" },
+  { key: "csharp", label: "C#" },
+  { key: "php", label: "PHP" },
+  { key: "sql", label: "SQL" },
+  { key: "json", label: "JSON" },
+  { key: "bash", label: "Bash/Shell" },
+  { key: "go", label: "Go" },
+  { key: "objectivec", label: "Objective-C" },
+  { key: "xml", label: "HTML/XML" },
+  { key: "css", label: "CSS" },
+  { key: "ruby", label: "Ruby" },
+  { key: "swift", label: "Swift" },
+  { key: "scala", label: "Scala" },
 ];
 ```
 
-##### 2. placeholder：Option，string; placeholder of editor
+##### 2\. `placeholder`: `string` (Optional)
 
-**3. getQuill：Option，function; param is the instance of Quill**
+Placeholder text for the editor when it's empty.
 
-instance's API：https://quilljs.com/docs/api/
+##### 3\. `getQuill`: `(quillInstance: Quill) => void` (Optional)
 
-```jsx
-const quill = useRef(null);
-const getQuill = (quillIns) => {
-  quill.current = quillIns;
-}; // quill.current will has all quill's API：https://quilljs.com/docs/api/
-// example
-const content = quill.current?.getContent(); // get the content of editor
-const text = quill.current?.getText(); // get all text of editor
-```
-
-**4. content：Option，Delta / string; initial data of editor**
+Callback function to get the Quill instance. You can use this to call Quill's API methods.
+[Quill API Documentation](https://quilljs.com/docs/api/)
 
 ```jsx
-// Delta
-<RichTextEditor modules={{ table: {}, codeHighlight: true }} getQuill={getQuill} content={JSON.parse("{\"ops\":[{\"insert\":\"Hello quill-react-commercial!\\n\"}]}")} />
+import React, { useRef } from "react";
+// ...
+const quillRef = useRef(null);
+const handleGetQuill = (quillInstance) => {
+  quillRef.current = quillInstance;
+};
 
-// string of html
-<RichTextEditor modules={{ table: {}, codeHighlight: true }} getQuill={getQuill} content={'<h1>Hello quill-react-commercial!</h1>'} />
+// Example usage later:
+// const content = quillRef.current?.getContents();
+// const text = quillRef.current?.getText();
 ```
 
-**5. readOnly：Option，boolean；default value: false**
+##### 4\. `content`: `Delta | string` (Optional)
 
-**6. onChange：Option，function；（Refer to TS definition）**
+Initial content for the editor. Can be a Quill Delta object or an HTML string.
 
-**7. onFocus：Option，function；（Refer to TS definition）**
+```jsx
+// Using Delta
+<RichTextEditor modules={/*...*/} content={{ ops: [{ insert: "Hello quill-react-pro!\n" }] }} />
 
-**8. onBlur：Option，function；（Refer to TS definition）**
-
-**9. i18n?: 'en' | 'zh' | 'es'; Option； International；default value: 'en'**
-
-**10. style?: CSSProperties;**
-
-**11. onSave: Option, function;**
-
-**12. theme?: 'snow' | 'bubble'; default value: 'snow'**
-
-### Other Issues
-
-1. How to switch code highlighting color styles
-
-Default use highlight.js xcode.css.
-
-```javascript
-import 'highlight.js/styles/darcula.css';
+// Using HTML string
+<RichTextEditor modules={/*...*/} content={'<h1>Hello quill-react-pro!</h1>'} />
 ```
 
-Or
+##### 5\. `readOnly`: `boolean` (Optional)
 
-```html
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/androidstudio.min.css"
-/>
+Set to `true` to make the editor read-only. Default: `false`.
+
+##### 6\. `onChange`: `(content: string, delta: Delta, source: Sources, editor: UnprivilegedEditor) => void` (Optional)
+
+Callback function triggered when the editor's content changes.
+Refer to Quill's `text-change` event documentation.
+
+##### 7\. `onFocus`: `(range: Range, source: Sources, editor: UnprivilegedEditor) => void` (Optional)
+
+Callback function triggered when the editor gains focus.
+
+##### 8\. `onBlur`: `(previousRange: Range, source: Sources, editor: UnprivilegedEditor) => void` (Optional)
+
+Callback function triggered when the editor loses focus.
+
+##### 9\. `i18n`: `'en' | 'zh' | 'es'` (Optional)
+
+Sets the language for UI elements like tooltips. Default: `'en'`. Other languages like `'zh'` (Chinese) and `'es'` (Spanish) might have partial support carried over from the original library; contributions are welcome.
+
+##### 10\. `style`: `React.CSSProperties` (Optional)
+
+```
+Custom CSS styles to apply to the editor's container.
 ```
 
-### How to develop & Welcome your PR.
+##### 11\. `onSave`: `() => void` (Optional)
 
-When debugging the editor function, you can execute `yarn example` to package static resources for `index.html` use, and open index.html in browser.
+```
+A callback function that can be triggered by a save action (e.g., a custom save button in the toolbar or Ctrl+S, if implemented).
+```
 
-- Modifying the JS, Less, and other features of the editor itself allows for hot updates, but the browser needs to be refreshed
-- Modifying the JS in the example will not re babel, but requires re executing the `yarn example`
-- Rollup packaging will be used after 1.3.7 to avoid the problem of introducing redundant configuration into SVG caused by previous tsc and webpack packaging
+##### 12\. `theme`: `'snow' | 'bubble'` (Optional)
+
+```
+Specifies the Quill theme to use. Default: `'snow'`.
+```
+
+## Advanced Topics
+
+### Customizing Code Highlighting Styles
+
+`quill-react-pro` uses `highlight.js` for syntax highlighting. By default, it might use a style like `xcode.css`. You can easily switch to other `highlight.js` themes:
+
+1.  **Install or link a `highlight.js` theme CSS:**
+    ```css
+    /* For example, in your main CSS file or imported globally in your app */
+    import 'highlight.js/styles/darcula.css'; /* Or any other theme */
+    ```
+    Or via CDN:
+    ```html
+    <link
+      rel="stylesheet"
+      href="//[cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/atom-one-dark.min.css](https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/atom-one-dark.min.css)"
+    />
+    ```
+
+## Development & Contributing
+
+This project is a fork of `quill-react-commercial` by `ludejun`. We thank the original author for their significant contributions.
+
+Contributions to `quill-react-pro` are welcome\!
+
+**Local Development Setup:**
+
+1.  Clone this repository (`marianochavez/quill-react-pro`).
+2.  Install dependencies: `yarn install` or `npm install`.
+3.  To build and watch the library for local development with the example:
+    ```shell
+    yarn example # (or npm run example)
+    ```
+    This command typically builds the library and serves an example `index.html` page where you can test your changes.
+    - Modifying the editor's core JS/Less files usually enables hot updates (browser refresh might be needed).
+    - Changes to the example files (`example/app.js`) might require re-running the `yarn example` command if not automatically re-babelized/re-bundled.
+
+**Pull Requests:**
+
+- Please ensure your code follows the existing style and that all tests (if available) pass.
+- Provide a clear description of your changes.
+
+## License
+
+This project is licensed under the **ISC License**, the same license as the original `quill-react-commercial` project.
+
+**Original Copyright:**
+Copyright (c) 2017-2025, Lu Dejun. All rights reserved.
+
+**Modifications Copyright:**
+Modifications copyright (c) 2024-Present, Mariano Chavez (`amarianochavez@gmail.com`).
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1.  Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+2.  Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+3.  Neither the name of the original copyright holder nor the names of its
+    contributors, nor the name 'Mariano Chavez' or 'quill-react-pro' may be used to
+    endorse or promote products derived from this software without specific
+    prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

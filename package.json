@@ -1,6 +1,6 @@
 {
-  "name": "quill-react-commercial",
-  "version": "1.6.2",
+  "name": "quill-react-pro",
+  "version": "0.1.0",
   "description": "A Quill component for React and more maturely.",
   "type": "module",
   "main": "lib/index.js",
@@ -11,12 +11,12 @@
     "babel": "npx babel example/app.js --watch --out-dir ./example/compile --source-maps",
     "example": "npx babel example/app.js --out-dir ./example/compile --source-maps && rimraf lib && rollup -c --watch"
   },
-  "author": "ludejun@live.cn",
+  "author": "amarianochavez@gmail.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ludejun/quill-react-commercial.git"
+    "url": "git+https://github.com/marianochavez/quill-react-pro.git"
   },
-  "homepage": "https://ludejun.github.io/quill-react-commercial/",
+  "homepage": "https://marianochavez.github.io/quill-react-pro/",
   "license": "ISC",
   "dependencies": {
     "highlight.js": "^10.7.2",
@@ -75,6 +75,8 @@
     "editor",
     "rich-text-editor",
     "wysiwyg-editor",
+    "quill-react",
+    "quill-react-pro",
     "富文本编辑器",
     "微信小程序",
     "辰记"
