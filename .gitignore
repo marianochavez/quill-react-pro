@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+/lib
+/dist
 
 # testing
 # Coverage directory used by tools like istanbul

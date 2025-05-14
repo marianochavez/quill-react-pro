@@ -25,7 +25,9 @@ import { getI18nText, i18nConfig } from './i18n';
 import IconUndo from 'quill/assets/icons/undo.svg';
 import IconRedo from 'quill/assets/icons/redo.svg';
 import IconDivider from './assets/icons/divider.svg';
+
 import 'quill/dist/quill.snow.css';
+import 'quill-better-table/dist/quill-better-table.css';
 import './assets/richTextEditor.less';
 import './assets/modules.less';
 import './assets/toolbar.less';
@@ -324,15 +326,15 @@ const RichTextEditor: FC<IEditorProps> = (props) => {
         }
       });
     }
-    const SizeStyle = Quill.import('attributors/style/size');
+    const SizeStyle = Quill.import('attributors/style/size') as any;
     SizeStyle.whitelist = sizeList;
     Quill.register(SizeStyle, true);
-    const FontStyle = Quill.import('formats/font');
+    const FontStyle = Quill.import('formats/font') as any;
     FontStyle.whitelist = fontList;
     Quill.register(FontStyle, true);
 
     // 设置重做撤销Icon
-    const icons = Quill.import('ui/icons');
+    const icons = Quill.import('ui/icons') as any;
     icons.undo = IconUndo;
     icons.redo = IconRedo;
     icons.divider = IconDivider;

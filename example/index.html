@@ -21,17 +21,126 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>quill-react-commercial</title>
-    <link href="./quill-react-commercial.min.css" rel="stylesheet" />
+    <title>Quill React Pro Demo</title>
+    <link href="./quill-react-pro.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --primary-color: #3d5afe;
+        --primary-light: #8187ff;
+        --primary-dark: #0031ca;
+        --text-color: #333;
+        --background-color: #f8f9fa;
+        --container-bg: #ffffff;
+        --border-color: #e0e0e0;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --error-color: #f44336;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      h1 {
+        color: var(--primary-dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: #666;
+        font-weight: 400;
+        margin-bottom: 2rem;
+      }
+
+      .editor-container {
+        background-color: var(--container-bg);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
       .ql-container {
-        height: 600px !important;
+        height: 500px !important;
+        border-radius: 0 0 4px 4px;
+        font-family: inherit;
+      }
+
+      .ql-toolbar {
+        border-radius: 4px 4px 0 0;
+        background-color: #f9f9f9;
+        border-color: var(--border-color) !important;
+      }
+
+      #error-info {
+        color: var(--error-color);
+        font-family: monospace;
+        white-space: pre-wrap;
+        margin: 0;
+        padding: 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--error-color);
+        background-color: rgba(244, 67, 54, 0.1);
+        display: none;
+      }
+
+      #error-info:not(:empty) {
+        display: block;
+        margin-top: 1.5rem;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem 0;
+        font-size: 0.875rem;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .ql-container {
+          height: 400px !important;
+        }
       }
     </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div class="container">
+      <header>
+        <h1>Quill React Pro Demo</h1>
+        <p class="subtitle">A powerful rich text editor component for React</p>
+      </header>
+
+      <div class="editor-container">
+        <div id="root"></div>
+      </div>
+
+      <div id="error-info"></div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -39,15 +148,72 @@
       You can add webfonts, meta tags, or analytics to this file.
       The build step will place the bundled scripts into the <body> tag.
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      To begin the development, run `npm start`.
+      To create a production bundle, use `npm run build`.
     -->
-    <script src="compile/react.development.js"></script>
-    <script src="compile/react-dom.development.js"></script>
-    <!-- <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script> -->
-    <script src="../dist/quill-react-commercial.min.js"></script>
-    <script src="quill-react-commercial.min.js"></script>
-    <!-- <script src="../lib/index.js"></script> -->
-    <script src="compile/app.js"></script>
+    <script>
+      // Capture errors to diagnose
+      window.addEventListener("error", function (e) {
+        console.error(e);
+        var errorInfo = document.getElementById("error-info");
+        errorInfo.textContent +=
+          "ERROR: " +
+          e.message +
+          "\n" +
+          (e.error && e.error.stack ? e.error.stack : "") +
+          (e.filename
+            ? " in file: " + e.filename + ", line: " + e.lineno
+            : "") +
+          "\n\n";
+      });
+
+      // Check if scripts are loading
+      function checkScript(name) {
+        var errorInfo = document.getElementById("error-info");
+        errorInfo.textContent += "Checking: " + name + "\n";
+      }
+
+      // Check objects after loading everything
+      window.addEventListener("load", function () {
+        var errorInfo = document.getElementById("error-info");
+        errorInfo.textContent +=
+          "window.React: " +
+          (window.React ? "Available ✅" : "Not available ❌") +
+          "\n";
+        errorInfo.textContent +=
+          "window.ReactDOM: " +
+          (window.ReactDOM ? "Available ✅" : "Not available ❌") +
+          "\n";
+        errorInfo.textContent +=
+          "window.QuillReactPro: " +
+          (window.QuillReactPro ? "Available ✅" : "Not available ❌") +
+          "\n";
+        errorInfo.textContent +=
+          'document.querySelector("#root"): ' +
+          (document.querySelector("#root") ? "Found ✅" : "Not found ❌") +
+          "\n";
+      });
+    </script>
+
+    <script
+      src="./react.development.js"
+      onload="checkScript('React loaded')"
+      onerror="checkScript('Error loading React')"
+    ></script>
+    <script
+      src="./react-dom.development.js"
+      onload="checkScript('ReactDOM loaded')"
+      onerror="checkScript('Error loading ReactDOM')"
+    ></script>
+    <script
+      src="./quill-react-pro.min.js"
+      onload="checkScript('Quill loaded')"
+      onerror="checkScript('Error loading Quill')"
+    ></script>
+    <script
+      src="./app.js"
+      onload="checkScript('App loaded')"
+      onerror="checkScript('Error loading App')"
+    ></script>
   </body>
 </html>

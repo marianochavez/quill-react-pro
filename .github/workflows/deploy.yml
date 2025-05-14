@@ -19,6 +19,6 @@ jobs:
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        ACCESS_TOKEN: ${{ secrets.Access_token }}
-        BRANCH: gh-pages
-        FOLDER: example
+        token: ${{ secrets.Access_token }}
+        branch: gh-pages
+        folder: example
