@@ -2,14 +2,13 @@
   "presets": [
     [
       "@babel/preset-env",
-      // {
-      //   "useBuiltIns": "usage",
-      //   "corejs": 3,
-      //   // "target": {},
-      //   "modules": false
-      // }
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3,
+        "modules": "auto"
+      }
     ],
-    "@babel/react",
+    "@babel/preset-react",
     "@babel/preset-typescript"
   ],
   "plugins": [
@@ -19,6 +18,7 @@
         "legacy": true
       }
     ],
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-transform-class-properties",
+    "@babel/plugin-transform-runtime"
   ]
 }

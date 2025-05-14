@@ -13,21 +13,27 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react",
 
     "outDir": "lib",
     "rootDir": ".",
     "removeComments": true,
     "declaration": true,
-    "declarationDir": "."
+    "declarationDir": "lib"
   },
   "exclude": [
-    "node_modules", "babel.config.js", "metro.config.js", "jest.config.js", "lib", "dist"
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "lib",
+    "dist"
   ],
   "include": [
     "index.tsx",
     "./modules/*",
-    "custom.d.ts"
-, "modules/customeFormats/image.js", "modules/customeFormats/syntax.js"  ]
+    "custom.d.ts",
+    "modules/customeFormats/image.js",
+    "modules/customeFormats/syntax.js"
+  ]
 }

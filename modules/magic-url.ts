@@ -1,7 +1,7 @@
 // Fork and Edit from 'quill-magic-url'
-import Delta from 'quill-delta';
-import normalizeUrl, { Options as NormalizeUrlOptions } from 'normalize-url';
-import Quill from 'quill';
+import Delta from "quill-delta";
+import normalizeUrl, { Options as NormalizeUrlOptions } from "normalize-url";
+import Quill from "quill";
 
 declare global {
   interface Window {
@@ -21,7 +21,8 @@ export type MagicUrlOptions = {
 export type Normalizer = (stringToNormalize: string) => string;
 
 const defaults = {
-  globalRegularExpression: /(https?:\/\/|www\.)[\w-\.]+\.[\w-\.]+(\/([\S]+)?)?/gi,
+  globalRegularExpression:
+    /(https?:\/\/|www\.)[\w-\.]+\.[\w-\.]+(\/([\S]+)?)?/gi,
   urlRegularExpression: /(https?:\/\/|www\.)[\w-\.]+\.[\w-\.]+(\/([\S]+)?)?/gi,
   globalMailRegularExpression: /([\w-\.]+@[\w-\.]+\.[\w-\.]+)/gi,
   mailRegularExpression: /([\w-\.]+@[\w-\.]+\.[\w-\.]+)/gi,
@@ -49,8 +50,8 @@ export class MagicUrl {
   }
   registerPasteListener() {
     // Preserves existing links
-    this.quill.clipboard.addMatcher('A', (node, delta) => {
-      const href = node.getAttribute('href');
+    this.quill.clipboard.addMatcher("A", (node, delta) => {
+      const href = (node as HTMLElement).getAttribute("href");
       const attributes = delta.ops[0]?.attributes;
       if (attributes?.link != null) {
         attributes.link = href;
@@ -58,7 +59,7 @@ export class MagicUrl {
       return delta;
     });
     this.quill.clipboard.addMatcher(Node.TEXT_NODE, (node, delta): Delta => {
-      if (typeof node.data !== 'string') {
+      if (typeof (node as Text).data !== "string") {
         return undefined as unknown as Delta;
       }
       const urlRegExp = this.options.globalRegularExpression;
@@ -67,35 +68,47 @@ export class MagicUrl {
       mailRegExp.lastIndex = 0;
       const newDelta = new Delta();
       let index = 0;
-      let urlResult = urlRegExp.exec(node.data);
-      let mailResult = mailRegExp.exec(node.data);
-      const handleMatch = (result: RegExpExecArray, regExp: RegExp, normalizer: Normalizer) => {
-        const head = node.data.substring(index, result.index); 
+      let urlResult = urlRegExp.exec((node as Text).data);
+      let mailResult = mailRegExp.exec((node as Text).data);
+      const handleMatch = (
+        result: RegExpExecArray,
+        regExp: RegExp,
+        normalizer: Normalizer
+      ) => {
+        const head = (node as Text).data.substring(index, result.index);
         newDelta.insert(head);
         const match = result[0];
         newDelta.insert(match, { link: normalizer(match) });
         index = regExp.lastIndex;
-        return regExp.exec(node.data);
+        return regExp.exec((node as Text).data);
       };
       while (urlResult !== null || mailResult !== null) {
         if (urlResult === null) {
-          if (mailResult) mailResult = handleMatch(mailResult, mailRegExp, this.mailNormalizer);
+          if (mailResult)
+            mailResult = handleMatch(
+              mailResult,
+              mailRegExp,
+              this.mailNormalizer
+            );
         } else if (mailResult === null) {
           urlResult = handleMatch(urlResult, urlRegExp, this.urlNormalizer);
         } else if (mailResult.index <= urlResult.index) {
           while (urlResult !== null && urlResult.index < mailRegExp.lastIndex) {
-            urlResult = urlRegExp.exec(node.data);
+            urlResult = urlRegExp.exec((node as Text).data);
           }
           mailResult = handleMatch(mailResult, mailRegExp, this.mailNormalizer);
         } else {
-          while (mailResult !== null && mailResult.index < urlRegExp.lastIndex) {
-            mailResult = mailRegExp.exec(node.data);
+          while (
+            mailResult !== null &&
+            mailResult.index < urlRegExp.lastIndex
+          ) {
+            mailResult = mailRegExp.exec((node as Text).data);
           }
           urlResult = handleMatch(urlResult, urlRegExp, this.urlNormalizer);
         }
       }
       if (index > 0) {
-        const tail = node.data.substring(index);
+        const tail = (node as Text).data.substring(index);
         newDelta.insert(tail);
         if (delta) delta!.ops = newDelta.ops;
       }
@@ -103,7 +116,7 @@ export class MagicUrl {
     });
   }
   registerTypeListener() {
-    this.quill.on('text-change', (delta) => {
+    this.quill.on("text-change", (delta) => {
       const ops = delta.ops;
       // Only return true, if last operation includes whitespace inserts
       // Equivalent to listening for enter, tab or space
@@ -111,14 +124,18 @@ export class MagicUrl {
         return;
       }
       const lastOp = ops[ops.length - 1];
-      if (!lastOp.insert || typeof lastOp.insert !== 'string' || !lastOp.insert.match(/\s/)) {
+      if (
+        !lastOp.insert ||
+        typeof lastOp.insert !== "string" ||
+        !lastOp.insert.match(/\s/)
+      ) {
         return;
       }
       this.checkTextForUrl(!!lastOp.insert.match(/ |\t/));
     });
   }
   registerBlurListener() {
-    this.quill.root.addEventListener('blur', () => {
+    this.quill.root.addEventListener("blur", () => {
       this.checkTextForUrl();
     });
   }
@@ -127,17 +144,17 @@ export class MagicUrl {
     if (!sel) {
       return;
     }
-    const [leaf] = this.quill.getLeaf(sel.index);
-    const leafIndex = this.quill.getIndex(leaf);
+    const [leaf] = this.quill.getLeaf(sel.index) as any;
+    const leafIndex = this.quill.getIndex(leaf as any);
 
-    if (!leaf.text) {
+    if (!leaf?.text) {
       return;
     }
 
     // We only care about the leaf until the current cursor position
     const relevantLength = sel.index - leafIndex;
-    const text: string = leaf.text.slice(0, relevantLength);
-    if (!text || leaf.parent.domNode.localName === 'a') {
+    const text: string = (leaf as any).text.slice(0, relevantLength);
+    if (!text || leaf.parent.domNode.localName === "a") {
       return;
     }
 
@@ -164,7 +181,7 @@ export class MagicUrl {
     leafIndex: number,
     text: string,
     matches: RegExpMatchArray,
-    normalizer: Normalizer,
+    normalizer: Normalizer
   ) {
     const match = matches.pop();
     if (match) {
@@ -177,7 +194,9 @@ export class MagicUrl {
     }
   }
   updateText(index: number, string: string, normalizer: Normalizer) {
-    const ops = new Delta().retain(index).retain(string.length, { link: normalizer(string) });
+    const ops = new Delta()
+      .retain(index)
+      .retain(string.length, { link: normalizer(string) });
     this.quill.updateContents(ops);
   }
   normalize(url: string) {
