@@ -98,4 +98,3 @@ if (!window.React) {
     reportError('Error in application initialization: ' + e.message);
   }
 }
-//# sourceMappingURL=app.js.map
