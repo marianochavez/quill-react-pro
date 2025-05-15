@@ -44,7 +44,7 @@ if (!window.React) {
       return React.createElement("div", {
         className: "App"
       }, React.createElement(RichTextEditor, {
-        i18n: 'es',
+        i18n: 'en',
         readOnly: false,
         modules: {
           table: {},
