@@ -1,3 +1,6 @@
+/**
+ * i18n configuration for all UI text in the editor
+ */
 export const i18nConfig = {
   en: {
     toolbarHeader: 'Body',
@@ -100,10 +103,17 @@ export const i18nConfig = {
   },
 };
 
+/**
+ * Get translated text for a key or array of keys
+ * 
+ * @param keys - Key or array of keys to get translations for
+ * @param i18n - Language code
+ * @returns Translated text or array of translated texts
+ */
 export const getI18nText = (
   keys: (keyof (typeof i18nConfig)['en'])[] | keyof (typeof i18nConfig)['en'],
   i18n: keyof typeof i18nConfig = 'en',
 ) => {
   if (Array.isArray(keys)) return keys.map((key) => i18nConfig[i18n][key]);
   return i18nConfig[i18n][keys];
-};
+}; 

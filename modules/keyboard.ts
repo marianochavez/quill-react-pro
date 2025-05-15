@@ -1,14 +1,48 @@
 import { Range } from "quill";
 import Quill from "quill";
 
+/**
+ * Interface for the keyboard handler context
+ */
 interface KeyboardHandlerThis {
   quill: Quill;
 }
 
-export const keyboardBindsFn = (options: any) => {
+/**
+ * Interface for keyboard handler options
+ */
+interface KeyboardOptions {
+  onSave?: () => void;
+}
+
+/**
+ * Interface for the context in backspace handler
+ */
+interface BackspaceContext {
+  line: {
+    parent: {
+      domNode: HTMLDivElement;
+    };
+  };
+  suffix: string;
+  prefix: string;
+  offset: number;
+}
+
+/**
+ * Creates and returns keyboard bindings for Quill editor
+ *
+ * @param options - Keyboard handler options
+ * @returns Object containing keyboard bindings
+ */
+export const keyboardBindsFn = (options: KeyboardOptions = {}) => {
   const { onSave } = options;
+
   return {
-    // 有序列表只能输入"1. "才会触发，改变比如输入"30. "会变为"1. "开始的有序列表的行为
+    /**
+     * Custom handler for ordered list creation
+     * Allows starting lists with any number (e.g., "30. ")
+     */
     "list autofill": {
       key: " ",
       collapsed: true,
@@ -19,96 +53,76 @@ export const keyboardBindsFn = (options: any) => {
         blockquote: false,
         header: false,
         table: false,
-        "table-cell-line": false, // 在table中不触发有序列表
+        "table-cell-line": false, // Don't trigger ordered list in tables
       },
       handler(this: KeyboardHandlerThis, range: Range, context: any) {
-        const { prefix, line } = context;
-
+        const { prefix } = context;
         const start = parseInt(prefix.replace(".", ""), 10);
+
         if (start !== 1) {
+          // Format with custom start number
           this.quill.formatLine(range.index, 1, "list", `ordered-${start}`);
-
-          // // 这个ol在编辑器中本身没啥作用，编辑器css已经将ol的样式设置为none，主要样式在li的伪类中定义；主要给转html等富文本使用
-          // const ol = line?.next?.parent?.domNode;
-          // ol.setAttribute('start', start);
-          // ol.style.setProperty('--list-item-start', start);
-          // // 真正设置有序列表起始值
-          // const li = line?.next?.domNode;
-          // li.dataset.reset = parseInt(prefix.replace('.', ''), 10);
-          // li.style.setProperty('counter-set', `list-0 ${parseInt(prefix.replace('.', ''), 10)}`);
-
           this.quill.formatLine(range.index, 1, "list", `ordered-${start}`);
         } else {
+          // Format with default start (1)
           this.quill.formatLine(range.index, 1, "list", "ordered");
           this.quill.formatLine(range.index, 1, "list", "ordered");
         }
 
+        // Remove the prefix text that triggered the formatting
         this.quill.deleteText(range.index - prefix.length, prefix.length);
-        // this.quill.setSelection(range.index, 1);
       },
     },
-    // bugfix: 当最开始是code块、list、引用块时，无法使用Backspace删除样式
+
+    /**
+     * Custom backspace handler for code blocks, lists, and blockquotes
+     * Fixes the issue where you can't remove formatting with backspace
+     */
     "code backspace": {
       key: "Backspace",
       format: ["code-block", "list", "blockquote"],
       handler(
         this: KeyboardHandlerThis,
         range: Range,
-        context: {
-          line: {
-            parent: {
-              domNode: HTMLDivElement;
-            };
-          };
-          suffix: string;
-          prefix: string;
-          offset: number;
-        }
+        context: BackspaceContext
       ) {
-        if (this.quill) {
-          // const [line] = this.quill.getLine(range.index);
-          // const isEmpty = !line.children.head.text || line.children.head.text.trim() === '';
-          const format = this.quill.getFormat(range);
+        if (!this.quill) return true;
+
+        const format = this.quill.getFormat(range);
+
+        // For code blocks, check if the entire block is empty
+        if (format["code-block"]) {
           const allCode = context?.line?.parent?.domNode?.innerHTML
             .replace(/<select>(.+)<\/span><\/span>/, "")
-            .replace(/<[^<>]+>/g, ""); // parent指代码块 div.ql-code-block-container
+            .replace(/<[^<>]+>/g, "");
 
-          // // 当是起始，代码块且整块中已无字符，或引用/列表且当前行为空，去除当前行格式；其他情况执行默认Backspace的handler
-          // if (
-          //   range.index === 0 &&
-          //   context.suffix === '' &&
-          //   ((format['code-block'] && (allCode === '\n' || allCode === '')) ||
-          //     (!format['code-block'] && isEmpty))
-          // ) {
-          //   this.quill.removeFormat(range.index, range.length);
-          //   return false;
-          // }
-
-          // 只要光标在list、引用的开头删除，直接移除格式；去除原只能文档开头的条件
-          if (
-            (format["list"] || format["blockquote"]) &&
-            context.prefix === ""
-          ) {
-            this.quill.removeFormat(range.index, range.length);
-            return false;
-          } else if (
-            format["code-block"] &&
-            (allCode === "\n" || allCode === "" || allCode === undefined)
-          ) {
-            // 光标在Code块中，只要块内内容为空，直接移除格式
+          if (allCode === "\n" || allCode === "" || allCode === undefined) {
+            // If code block is empty, remove formatting
             this.quill.removeFormat(range.index, range.length);
             return false;
           }
         }
+        // For lists and blockquotes, check if cursor is at the beginning of the line
+        else if (
+          (format["list"] || format["blockquote"]) &&
+          context.prefix === ""
+        ) {
+          this.quill.removeFormat(range.index, range.length);
+          return false;
+        }
 
+        // Default behavior
         return true;
       },
     },
+
+    /**
+     * Save handler (Ctrl+S / Cmd+S)
+     */
     save: {
       key: "s",
       shortKey: true,
-      handler(this: KeyboardHandlerThis, range: Range, context: any) {
-        console.log("keyboard save!");
+      handler(this: KeyboardHandlerThis) {
         if (onSave) {
           onSave();
           return false;
