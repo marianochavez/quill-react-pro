@@ -45,7 +45,7 @@ if (!window.React) {
         className: "App"
       }, React.createElement(RichTextEditor, {
         i18n: 'en',
-        readOnly: false,
+        readOnly: true,
         modules: {
           table: {},
           codeHighlight: true,
@@ -98,3 +98,4 @@ if (!window.React) {
     reportError('Error in application initialization: ' + e.message);
   }
 }
+//# sourceMappingURL=app.js.map

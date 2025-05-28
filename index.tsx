@@ -549,8 +549,25 @@ const RichTextEditor: FC<IEditorProps> = (props) => {
     }
   }, [readOnly]);
 
+  // Apply readOnly class to inner editor after initialization
+  useEffect(() => {
+    const editorContainer = document.querySelector(`#editor${editorId.current}`);
+    if (editorContainer) {
+      if (readOnly) {
+        editorContainer.classList.add('ql-readonly');
+      } else {
+        editorContainer.classList.remove('ql-readonly');
+      }
+    }
+    
+    // Update readOnly state in Quill instance
+    if (quillRef.current) {
+      quillRef.current.enable(!readOnly);
+    }
+  }, [readOnly, editorId.current]);
+
   return (
-    <div className="ql-editor-container" style={style}>
+    <div className={`ql-editor-container${readOnly ? ' ql-readonly' : ''}`} style={style}>
       <div id={`editor${editorId.current}`} />
     </div>
   );

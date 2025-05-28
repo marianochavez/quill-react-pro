@@ -186,3 +186,32 @@
     cursor: not-allowed;
   }
 }
+
+// ReadOnly
+.ql-editor-container.ql-readonly {
+  .ql-container {
+    border: none !important;
+  }
+  
+  .ql-toolbar.ql-snow {
+    border: none !important;
+    display: none !important;
+  }
+}
+
+// Toolbar empty - Hide empty toolbars
+.ql-editor-container .ql-toolbar.ql-snow:empty {
+  display: none !important;
+}
+
+// ReadOnly for inner editor - Additional coverage
+.ql-readonly {
+  .ql-container {
+    border: none !important;
+  }
+  
+  .ql-toolbar.ql-snow {
+    border: none !important;
+    display: none !important;
+  }
+}
