@@ -40,7 +40,7 @@ if (!window.React) {
                 { className: "App" },
                 React.createElement(RichTextEditor, {
                     i18n: 'en',
-                    readOnly: false,
+                    readOnly: true,
                     modules: {
                         table: {},
                         codeHighlight: true,
