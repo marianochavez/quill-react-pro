@@ -1,10 +1,3 @@
-"use strict";
-
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-require("core-js/modules/es.date.to-json.js");
-require("core-js/modules/es.object.to-string.js");
-require("core-js/modules/es.promise.js");
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 // Browser-compatible script without imports
 function reportError(message) {
   try {
@@ -27,35 +20,32 @@ if (!window.React) {
   reportError('QuillReactPro is not available');
 } else {
   try {
-    var App = function App() {
-      var quill = React.useRef({});
-      var _React$useState = React.useState(''),
-        _React$useState2 = (0, _slicedToArray2["default"])(_React$useState, 2),
-        delta = _React$useState2[0],
-        setDelta = _React$useState2[1];
-      var initContent = '';
-      var getQuill = function getQuill(quillIns) {
+    const App = function App() {
+      const quill = React.useRef({});
+      const [delta, setDelta] = React.useState('');
+      const initContent = '';
+      const getQuill = function (quillIns) {
         quill.current = quillIns;
       };
-      var quillChange = function quillChange(delta, old, source) {
+      const quillChange = function (delta, old, source) {
         setDelta(JSON.stringify(quill.current.getContents()));
       };
-      var RichTextEditor = window.QuillReactPro;
+      const RichTextEditor = window.QuillReactPro;
       return React.createElement("div", {
         className: "App"
       }, React.createElement(RichTextEditor, {
         i18n: 'en',
-        readOnly: true,
+        readOnly: false,
         modules: {
           table: {},
           codeHighlight: true,
           imageHandler: {
-            imgUploadApi: function imgUploadApi(formData) {
+            imgUploadApi: function (formData) {
               // This would need to be implemented properly
               console.log('Image upload requested');
               return Promise.resolve('https://example.com/image.jpg');
             },
-            uploadFailCB: function uploadFailCB() {
+            uploadFailCB: function () {
               console.error('Image upload fail!');
             }
           }
@@ -63,8 +53,8 @@ if (!window.React) {
         getQuill: getQuill,
         content: initContent,
         onChange: quillChange,
-        onFocus: function onFocus(arg) {},
-        onSave: function onSave() {
+        onFocus: function (arg) {},
+        onSave: function () {
           console.log("'CMD+S' used.");
         }
       }), React.createElement("div", {
@@ -73,15 +63,15 @@ if (!window.React) {
         }
       }, delta));
     };
-    var domContainer = document.querySelector('#root');
+    const domContainer = document.querySelector('#root');
 
     // Check if we are using React 18 (which uses createRoot) or previous versions
     if (ReactDOM.createRoot) {
       // React 18+
       try {
-        var root = ReactDOM.createRoot(domContainer);
+        const root = ReactDOM.createRoot(domContainer);
         root.render(React.createElement(App, null));
-        reportError('App rendered with React 18+ createRoot');
+        console.log('App rendered with React 18+ createRoot');
       } catch (e) {
         reportError('Error rendering with createRoot: ' + e.message);
       }
@@ -89,7 +79,7 @@ if (!window.React) {
       // React 18-
       try {
         ReactDOM.render(React.createElement(App, null), domContainer);
-        reportError('App rendered with ReactDOM.render (React < 18)');
+        console.log('App rendered with ReactDOM.render (React < 18)');
       } catch (e) {
         reportError('Error rendering with ReactDOM.render: ' + e.message);
       }

@@ -40,7 +40,7 @@ if (!window.React) {
                 { className: "App" },
                 React.createElement(RichTextEditor, {
                     i18n: 'en',
-                    readOnly: true,
+                    readOnly: false,
                     modules: {
                         table: {},
                         codeHighlight: true,
@@ -77,7 +77,7 @@ if (!window.React) {
             try {
                 const root = ReactDOM.createRoot(domContainer);
                 root.render(React.createElement(App, null));
-                reportError('App rendered with React 18+ createRoot');
+                console.log('App rendered with React 18+ createRoot');
             } catch (e) {
                 reportError('Error rendering with createRoot: ' + e.message);
             }
@@ -85,7 +85,7 @@ if (!window.React) {
             // React 18-
             try {
                 ReactDOM.render(React.createElement(App, null), domContainer);
-                reportError('App rendered with ReactDOM.render (React < 18)');
+                console.log('App rendered with ReactDOM.render (React < 18)');
             } catch (e) {
                 reportError('Error rendering with ReactDOM.render: ' + e.message);
             }
