@@ -31,22 +31,66 @@ class QSyntax extends BaseSyntax {
       });
 
       const select = this.quill.root.ownerDocument.createElement('select');
-      this.options.languages.forEach(({ key, label }) => {
+      
+      // Filter languages to only show available ones, plus loaded ones
+      const availableLanguages = this.options.languages.filter(({ key }) => {
+        // Allow 'plain' always, and check if language is registered in hljs
+        return key === 'plain' || this.options.hljs.getLanguage(key);
+      });
+      
+      availableLanguages.forEach(({ key, label }) => {
         const option = select.ownerDocument.createElement('option');
         option.textContent = label;
         option.setAttribute('value', key);
         select.appendChild(option);
       });
-      select.addEventListener('change', () => {
+      
+      select.addEventListener('change', async () => {
+        const selectedLanguage = select.value;
+        
+        // If language is not loaded and we have a dynamic loader, try to load it
+        if (selectedLanguage !== 'plain' && !this.options.hljs.getLanguage(selectedLanguage)) {
+          if (window.loadHighlightLanguage) {
+            try {
+              await window.loadHighlightLanguage(selectedLanguage);
+              // After loading, add it to the dropdown if it wasn't there
+              const existingOption = select.querySelector(`option[value="${selectedLanguage}"]`);
+              if (!existingOption) {
+                const option = select.ownerDocument.createElement('option');
+                const languageConfig = this.options.languages.find(l => l.key === selectedLanguage);
+                option.textContent = languageConfig ? languageConfig.label : selectedLanguage;
+                option.setAttribute('value', selectedLanguage);
+                option.selected = true;
+                select.appendChild(option);
+              }
+            } catch (error) {
+              console.warn(`Failed to load language ${selectedLanguage}:`, error);
+              // Revert to previous selection or plain
+              select.value = 'plain';
+              return;
+            }
+          } else {
+            console.warn(`Language ${selectedLanguage} is not available and no dynamic loader found`);
+            select.value = 'plain';
+            return;
+          }
+        }
+        
         blot.format(CodeBlock.blotName, select.value);
         this.quill.root.focus(); // Prevent scrolling
         this.highlight(blot, true);
       });
+      
       container.append(select, copy);
       // if (blot.uiNode == null) {
       blot.attachUI(container); // blot.uiNode是有的，在BaseSyntax中已被创建，这里需要覆盖
       if (blot.prev && blot.prev.domNode) {
-        select.value = CodeBlock.formats(blot.prev.domNode);
+        const currentLanguage = CodeBlock.formats(blot.prev.domNode);
+        // Only set if the language is available in the dropdown
+        const optionExists = select.querySelector(`option[value="${currentLanguage}"]`);
+        if (optionExists) {
+          select.value = currentLanguage;
+        }
       } // 编辑器中 content 再次渲染需要自动选上语言
       // }
     });

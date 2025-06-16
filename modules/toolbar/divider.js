@@ -12,12 +12,8 @@ class DividerHandler extends Module {
     this.quill = quill;
     this.options = options || {};
     this.toolbar = quill.getModule('toolbar');
-    if (
-      typeof this.toolbar !== 'undefined' &&
-      this.toolbar.container.querySelector('button.ql-divider')
-    ) {
-      this.toolbar.container.querySelector('button.ql-divider').onclick = () =>
-        this.handleDividerClick();
+    if (typeof this.toolbar !== 'undefined') {
+      this.toolbar.addHandler('divider', this.handleDividerClick.bind(this));
     }
   }
 

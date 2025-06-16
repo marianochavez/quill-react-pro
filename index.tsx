@@ -157,7 +157,6 @@ const RichTextEditor: FC<IEditorProps> = (props) => {
       if (table) {
         quillModules.current.table = false;
         quillModules.current['better-table'] = {
-          i18n,
           operationMenu: {
             items:
               (typeof table !== 'boolean' && table.operationMenu) ||
@@ -221,13 +220,42 @@ const RichTextEditor: FC<IEditorProps> = (props) => {
                       text: 'Eliminar tabla',
                     },
                   }
-                : {}),
+                : {
+                    insertColumnRight: {
+                      text: 'Insert column right',
+                    },
+                    insertColumnLeft: {
+                      text: 'Insert column left',
+                    },
+                    insertRowUp: {
+                      text: 'Insert row up',
+                    },
+                    insertRowDown: {
+                      text: 'Insert row down',
+                    },
+                    mergeCells: {
+                      text: 'Merge cells',
+                    },
+                    unmergeCells: {
+                      text: 'Unmerge cells',
+                    },
+                    deleteColumn: {
+                      text: 'Delete column',
+                    },
+                    deleteRow: {
+                      text: 'Delete row',
+                    },
+                    deleteTable: {
+                      text: 'Delete table',
+                    },
+                  }),
             color: {
               colors: ['#dbc8ff', '#6918b4', '#4a90e2', '#999', '#fff'], // 背景色值, ['white', 'red', 'yellow', 'blue'] as default
               text: getI18nText('tableBackground', i18n), // subtitle, 'Background Colors' as default
               ...(typeof table !== 'boolean' ? table.backgroundColors : null),
             },
           },
+          ...(typeof table !== 'boolean' ? table : {}),
         };
 
         quillModules.current.tableHandler = {
@@ -237,12 +265,12 @@ const RichTextEditor: FC<IEditorProps> = (props) => {
       }
 
       if (codeHighlight) {
-        // quillModules.current.syntax = {
-        //   hljs: highlightInit(),
-        // };
+        // Initialize highlight.js synchronously
+        const hljs = highlightInit();
+        
         quillModules.current.qSyntax = {
           i18n,
-          hljs: highlightInit(),
+          hljs: hljs,
           languages:
             typeof codeHighlight !== 'boolean'
               ? codeHighlight

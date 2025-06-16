@@ -21,7 +21,7 @@
   "dependencies": {
     "@babel/runtime": "^7.27.1",
     "core-js": "^3.37.1",
-    "highlight.js": "^10.7.2",
+    "highlight.js": "^10.7.3",
     "normalize-url": "^8.0.0",
     "quill": "^2.0.2",
     "quill-better-table": "^1.2.10"
@@ -35,8 +35,13 @@
     "*.css"
   ],
   "files": [
-    "lib",
-    "dist",
+    "lib/*.js",
+    "lib/*.d.ts", 
+    "lib/*.css",
+    "dist/*.js",
+    "dist/*.css",
+    "!lib/**/*.map",
+    "!dist/**/*.map",
     "LICENSE",
     "README.md"
   ],
@@ -56,6 +61,7 @@
     "@rollup/plugin-strip": "^3.0.4",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^9.0.2",
+    "@types/highlight.js": "^9.12.4",
     "@types/quill": "^2.0.14",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

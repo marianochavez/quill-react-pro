@@ -1,0 +1,34 @@
+# Source files
+/modules/
+/assets/
+/example/
+index.tsx
+utils.ts
+i18n.ts
+custom.d.ts
+
+# Config files
+.babelrc
+rollup.config.mjs
+tsconfig.json
+postcss.config.cjs
+.gitignore
+.DS_Store
+
+# Dev dependencies
+node_modules/
+.github/
+
+# Source maps (large files)
+**/*.map
+
+# Build artifacts we don't need in published package
+lib/**/*.test.*
+lib/**/*.spec.*
+
+# Documentation that's not needed
+CHANGELOG.md
+
+# Lock files
+package-lock.json
+yarn.lock 

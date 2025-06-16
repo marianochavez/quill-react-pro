@@ -11,17 +11,42 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 
+// Define external dependencies to reduce bundle size
+const external = [
+  'react',
+  'react-dom',
+  'quill',
+  'quill-delta',
+  'quill-better-table',
+  'highlight.js',
+  /^highlight\.js\//,  // All highlight.js sub-imports
+  'core-js',
+  /^core-js\//,
+  '@babel/runtime',
+  /^@babel\/runtime\//
+];
+
 export default [
   {
     input: './index.tsx',
+    external,
     output: {
       file: pkg.main,
       format: 'esm',
+      // Remove source maps for production lib build
+      sourcemap: false,
     },
     plugins: [
       peerDepsExternal(),
-      resolve(),
-      commonjs({ transformMixedEsModules: true }),
+      resolve({
+        preferBuiltins: false,
+        browser: true,
+      }),
+      commonjs({ 
+        transformMixedEsModules: true,
+        // Exclude large dependencies from bundling
+        exclude: ['node_modules/highlight.js/**', 'node_modules/quill/**']
+      }),
       typescript({
         tsconfig: './tsconfig.json',
         declaration: true,
@@ -29,14 +54,14 @@ export default [
         rootDir: '.',
       }),
       babel({
-        babelHelpers: 'runtime',
+        babelHelpers: 'bundled',
         exclude: 'node_modules/**',
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       }),
       postcss({
         extensions: ['.css', '.less'],
         extract: 'style.css',
-        minimize: false,
+        minimize: true, // Minimize CSS even in lib build
         use: [
           ['less', { javascriptEnabled: true }]
         ],
@@ -46,16 +71,18 @@ export default [
   },
   {
     input: './index.tsx',
+    external: ['react', 'react-dom'], // Only peer dependencies as external for UMD
     output: [
       {
         file: 'dist/quill-react-pro.min.js',
         format: 'umd',
-        sourcemap: true,
+        sourcemap: false, // Disable source maps to save 4.2MB
         name: 'QuillReactPro',
         globals: {
           'react': 'React',
           'react-dom': 'ReactDOM'
-        }
+        },
+        inlineDynamicImports: true, // Fix UMD code-splitting issue
       },
       {
         file: 'example/quill-react-pro.min.js',
@@ -65,13 +92,21 @@ export default [
         globals: {
           'react': 'React',
           'react-dom': 'ReactDOM'
-        }
+        },
+        inlineDynamicImports: true, // Fix UMD code-splitting issue
       },
     ],
     plugins: [
       peerDepsExternal(),
-      resolve(),
-      commonjs(),
+      resolve({
+        preferBuiltins: false,
+        browser: true,
+        // Include all dependencies in UMD build except React
+        skip: ['react', 'react-dom']
+      }),
+      commonjs({
+        transformMixedEsModules: true,
+      }),
       typescript({
         tsconfig: './tsconfig.json',
         declaration: false,
@@ -79,7 +114,7 @@ export default [
         emitDeclarationOnly: false,
       }),
       babel({
-        babelHelpers: 'runtime',
+        babelHelpers: 'bundled',
         exclude: 'node_modules/**',
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       }),
@@ -92,7 +127,15 @@ export default [
         ],
       }),
       svg(),
-      terser(),
+      terser({
+        compress: {
+          drop_console: false, // Keep console logs for UMD debug
+          drop_debugger: true,
+        },
+        mangle: {
+          safari10: true,
+        },
+      }),
     ],
   },
 ];

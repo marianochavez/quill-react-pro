@@ -3,9 +3,9 @@
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": "usage",
-        "corejs": 3,
-        "modules": "auto"
+        "useBuiltIns": false,
+        "modules": false,
+        "targets": "> 0.25%, not dead"
       }
     ],
     "@babel/preset-react",
@@ -18,7 +18,6 @@
         "legacy": true
       }
     ],
-    "@babel/plugin-transform-class-properties",
-    "@babel/plugin-transform-runtime"
+    "@babel/plugin-transform-class-properties"
   ]
 }
