@@ -1,6 +1,6 @@
 {
   "name": "quill-react-pro",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Quill component for React and more maturely.",
   "type": "module",
   "main": "lib/index.js",
@@ -36,7 +36,7 @@
   ],
   "files": [
     "lib/*.js",
-    "lib/*.d.ts", 
+    "lib/*.d.ts",
     "lib/*.css",
     "dist/*.js",
     "dist/*.css",
